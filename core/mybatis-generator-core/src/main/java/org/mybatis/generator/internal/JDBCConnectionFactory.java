@@ -15,16 +15,16 @@
  */
 package org.mybatis.generator.internal;
 
-import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
-import static org.mybatis.generator.internal.util.messages.Messages.getString;
+import org.mybatis.generator.api.ConnectionFactory;
+import org.mybatis.generator.config.JDBCConnectionConfiguration;
 
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.mybatis.generator.api.ConnectionFactory;
-import org.mybatis.generator.config.JDBCConnectionConfiguration;
+import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
+import static org.mybatis.generator.internal.util.messages.Messages.getString;
 
 /**
  * This class assumes that classes are cached elsewhere for performance reasons,
@@ -78,6 +78,9 @@ public class JDBCConnectionFactory implements ConnectionFactory {
             props.setProperty("password", password); //$NON-NLS-1$
         }
 
+		// this two property is for read remarks from DatabaseMetaData
+		props.setProperty("remarks", "true");
+		props.setProperty("useInformationSchema", "true");
         props.putAll(otherProperties);
 
         Driver driver = getDriver();
