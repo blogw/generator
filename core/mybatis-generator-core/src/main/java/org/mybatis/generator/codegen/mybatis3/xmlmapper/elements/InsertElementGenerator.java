@@ -15,9 +15,6 @@
  */
 package org.mybatis.generator.codegen.mybatis3.xmlmapper.elements;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.dom.OutputUtilities;
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
@@ -27,6 +24,9 @@ import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.codegen.mybatis3.ListUtilities;
 import org.mybatis.generator.codegen.mybatis3.MyBatis3FormattingUtilities;
 import org.mybatis.generator.config.GeneratedKey;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InsertElementGenerator extends AbstractXmlElementGenerator {
 
@@ -74,7 +74,20 @@ public class InsertElementGenerator extends AbstractXmlElementGenerator {
                     answer.addElement(getSelectKey(introspectedColumn, gk));
                 }
             });
-        }
+        } else {
+        	// 当generator xml里面没有配置GeneratedKey，而数据库中有自增长字段时
+			for(IntrospectedColumn column : introspectedTable.getAllColumns()){
+				if(column.isAutoIncrement()){
+					answer.addAttribute(new Attribute(
+							"useGeneratedKeys", "true")); //$NON-NLS-1$ //$NON-NLS-2$
+					answer.addAttribute(new Attribute(
+							"keyProperty", column.getJavaProperty())); //$NON-NLS-1$
+					answer.addAttribute(new Attribute(
+							"keyColumn", column.getActualColumnName())); //$NON-NLS-1$
+					break;
+				}
+			};
+		}
 
         StringBuilder insertClause = new StringBuilder();
 
